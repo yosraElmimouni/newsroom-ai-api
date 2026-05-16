@@ -17,7 +17,7 @@ import { MediaModule } from './media/media.module';
         useFactory: (configservice: ConfigService)=> ({
           type:'postgres',
           host:configservice.get('DB_HOST'),
-          port:configservice.get('DB_PORT'),
+          port: parseInt(configservice.get('DB_PORT') || '5432'),
           username:configservice.get('DB_USERNAME'),
           password:configservice.get('DB_PASSWORD'),
           database:configservice.get('DB_NAME'),
