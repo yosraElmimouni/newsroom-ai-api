@@ -4,51 +4,60 @@ import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
-import { ArticleModule } from './article/article.module';
-import { MediaModule } from './media/media.module';
+import { ArticleModule } from './modules/article.module';
+import { MediaModule } from './modules/media.module';
+import { AgendaModule } from './modules/agenda.module';
+import { UserModule } from './modules/user.module';
+import { NewsItemModule } from './modules/news-item.module';
+import { IaAnalyseModule } from './modules/ia_analyse.module';
+import { NotificationModule } from './modules/notification.module';
+import { RevisionModule } from './modules/revision.module';
+import { RoleModule } from './modules/role.module';
+import { SourceModule } from './modules/source.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     TypeOrmModule.forRootAsync({
-  imports: [ConfigModule],
-  inject: [ConfigService],
+      imports: [ConfigModule],
+      inject: [ConfigService],
 
-  useFactory: (configService: ConfigService) => ({
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres',
 
-    type: 'postgres',
+        host: configService.get('DB_HOST'),
 
-    host: configService.get('DB_HOST'),
+        port: parseInt(configService.get('DB_PORT') || '5432'),
 
-    port: parseInt(
-      configService.get('DB_PORT') || '5432'
-    ),
+        url: configService.get('DATABASE_URL'),
 
-    url: configService.get('DATABASE_URL'),
+        username: configService.get('DB_USERNAME'),
 
-    username: configService.get('DB_USERNAME'),
+        password: configService.get('DB_PASSWORD'),
 
-    password: configService.get('DB_PASSWORD'),
+        database: configService.get('DB_NAME'),
 
-    database: configService.get('DB_NAME'),
+        // ssl: {
+        //   rejectUnauthorized: false,
+        // },
 
-    ssl: {
-      rejectUnauthorized: false,
-    },
+        entities: [join(__dirname, '**', '*.entity.{ts,js}')],
 
-    entities: [
-      join(__dirname, '**', '*.entity.{ts,js}')
-    ],
-
-    synchronize: true,
-  }),
-}),
+        synchronize: true,
+      }),
+    }),
     ArticleModule,
-    MediaModule
+    MediaModule,
+    AgendaModule,
+    UserModule,
+    NewsItemModule,
+    IaAnalyseModule,
+    NotificationModule,
+    RevisionModule,
+    RoleModule,
+    SourceModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-
-
 export class AppModule {}
