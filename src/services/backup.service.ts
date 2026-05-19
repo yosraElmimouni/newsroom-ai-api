@@ -11,7 +11,7 @@ export class BackupService {
     private readonly backupDataSource: DataSource,
   ) {}
 
-  @Cron(CronExpression.EVERY_HOUR)
+  @Cron(CronExpression.EVERY_10_SECONDS)
   async syncDatabase() {
     try {
       const entities = this.defaultDataSource.entityMetadatas;
