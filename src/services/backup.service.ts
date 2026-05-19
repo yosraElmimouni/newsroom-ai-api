@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
 @Injectable()
@@ -7,9 +8,12 @@ export class BackupService {
   private readonly logger = new Logger(BackupService.name);
 
   constructor(
-    private readonly defaultDataSource: DataSource,
-    private readonly backupDataSource: DataSource,
-  ) {}
+  @InjectDataSource('default')
+  private readonly defaultDataSource: DataSource,
+
+  @InjectDataSource('backup')
+  private readonly backupDataSource: DataSource,
+) {}
 
   @Cron(CronExpression.EVERY_10_SECONDS)
   async syncDatabase() {

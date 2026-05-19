@@ -25,6 +25,7 @@ import { ScheduleModule } from '@nestjs/schedule';
       inject: [ConfigService],
 
       useFactory: (configService: ConfigService) => ({
+        name: 'default',
         type: 'postgres',
 
         host: configService.get('DB_HOST'),
