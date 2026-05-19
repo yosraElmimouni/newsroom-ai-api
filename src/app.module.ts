@@ -14,6 +14,8 @@ import { NotificationModule } from './modules/notification.module';
 import { RevisionModule } from './modules/revision.module';
 import { RoleModule } from './modules/role.module';
 import { SourceModule } from './modules/source.module';
+import { BackupModule } from './modules/backup.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -46,6 +48,19 @@ import { SourceModule } from './modules/source.module';
         synchronize: true,
       }),
     }),
+    TypeOrmModule.forRootAsync({
+      name: 'backup',
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres',
+        url: configService.get('BACKUP_DATABASE_URL'),
+        entities: [join(__dirname, '**', '*.entity.{ts,js}')],
+        synchronize: true, // Permet de créer automatiquement les tables sur Neon
+      }),
+    }),
+    ScheduleModule.forRoot(),
+    BackupModule, 
     ArticleModule,
     MediaModule,
     AgendaModule,
