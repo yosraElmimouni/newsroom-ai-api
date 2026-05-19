@@ -13,8 +13,6 @@ export class BackupService {
 
   @Cron(CronExpression.EVERY_HOUR)
   async syncDatabase() {
-    this.logger.log('🚀 Backup intelligent sans timestamps...');
-
     try {
       const entities = this.defaultDataSource.entityMetadatas;
 
@@ -52,13 +50,13 @@ export class BackupService {
         }
 
         this.logger.log(
-          `✅ ${entity.tableName} : ${toInsert.length} new, ${toUpdate.length} updated`
+          `${entity.tableName} : ${toInsert.length} new, ${toUpdate.length} updated`
         );
       }
 
-      this.logger.log('🏁 Backup terminé avec succès');
+      this.logger.log(' Backup terminé avec succès');
     } catch (error) {
-      this.logger.error('❌ Erreur backup', error);
+      this.logger.error(' Erreur backup', error);
     }
   }
 }

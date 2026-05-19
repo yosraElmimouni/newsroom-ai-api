@@ -56,7 +56,7 @@ import { ScheduleModule } from '@nestjs/schedule';
         type: 'postgres',
         url: configService.get('BACKUP_DATABASE_URL'),
         entities: [join(__dirname, '**', '*.entity.{ts,js}')],
-        synchronize: true, // Permet de créer automatiquement les tables sur Neon
+        synchronize: true, 
       }),
     }),
     ScheduleModule.forRoot(),
