@@ -31,4 +31,10 @@ export class MediaController {
   remove(@Param('id') id: string) {
     return this.mediaService.remove(+id);
   }
+
+  @Get('Article/:id')
+  findMedias(@Param('id') id: string) {
+    return this.mediaService.getMediasByArticle(+id);
+  }
+
 }

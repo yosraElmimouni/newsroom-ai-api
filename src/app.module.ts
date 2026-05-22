@@ -23,42 +23,58 @@ import { ScheduleModule } from '@nestjs/schedule';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        const url = configService.get('DATABASE_URL');
+        
+        const config: any = {
+          name: 'default',
+          type: 'postgres',
+          entities: [join(__dirname, '**', '*.entity.{ts,js}')],
+          synchronize: true, 
+        };
 
-      useFactory: (configService: ConfigService) => ({
-        name: 'default',
-        type: 'postgres',
-
-        host: configService.get('DB_HOST'),
-
-        port: parseInt(configService.get('DB_PORT') || '5432'),
-
-        url: configService.get('DATABASE_URL'),
-
-        username: configService.get('DB_USERNAME'),
-
-        password: configService.get('DB_PASSWORD'),
-
-        database: configService.get('DB_NAME'),
-
-        // ssl: {
-        //   rejectUnauthorized: false,
-        // },
-
-        entities: [join(__dirname, '**', '*.entity.{ts,js}')],
-
-        synchronize: true,
-      }),
+        if (url) {
+          config.url = url;
+          if (url.includes('neon.tech') || url.includes('render.com')) {
+            config.ssl = { rejectUnauthorized: false };
+          }
+        } else {
+          config.host = configService.get('DB_HOST') || 'localhost';
+          config.port = parseInt(configService.get('DB_PORT') || '5432');
+          config.username = configService.get('DB_USERNAME');
+          config.password = configService.get('DB_PASSWORD');
+          config.database = configService.get('DB_NAME');
+        }
+        return config;
+      },
     }),
     TypeOrmModule.forRootAsync({
       name: 'backup',
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        type: 'postgres',
-        url: configService.get('BACKUP_DATABASE_URL'),
-        entities: [join(__dirname, '**', '*.entity.{ts,js}')],
-        synchronize: true, 
-      }),
+      useFactory: (configService: ConfigService) => {
+        const backupUrl = configService.get('BACKUP_DATABASE_URL');
+
+        const config: any = {
+          type: 'postgres',
+          entities: [join(__dirname, '**', '*.entity.{ts,js}')],
+          synchronize: true, 
+        };
+
+        if (backupUrl) {
+          config.url = backupUrl;
+          if (backupUrl.includes('neon.tech') || backupUrl.includes('render.com')) {
+            config.ssl = { rejectUnauthorized: false };
+          }
+        } else {
+          config.host = configService.get('DB_HOST') || 'localhost'; 
+          config.port = parseInt(configService.get('DB_PORT') || '5432');
+          config.username = configService.get('DB_USERNAME');
+          config.password = configService.get('DB_PASSWORD');
+          config.database = configService.get('DB_NAME') + '_backup'; 
+        }
+        return config;
+      },
     }),
     ScheduleModule.forRoot(),
     BackupModule, 

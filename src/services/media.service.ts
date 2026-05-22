@@ -45,4 +45,13 @@ export class MediaService {
     }
     return await this.analyseRepository.remove(Media);
   }
+  async getMediasByArticle(articleId: number) {
+    return await this.analyseRepository.find({
+      where: {
+        article: {
+          id: articleId,
+        },
+      },
+    });
+  }
 }

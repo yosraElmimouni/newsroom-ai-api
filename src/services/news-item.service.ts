@@ -19,8 +19,12 @@ export class NewsItemService {
   }
 
   async findAll() {
-    return await this.analyseRepository.find();
-  }
+  return await this.analyseRepository
+    .createQueryBuilder('news')
+    .leftJoinAndSelect('news.source', 'source')
+    .orderBy('news.datePublication', 'DESC')
+    .getMany();
+}
 
   findOne(id: number) {
     return this.analyseRepository.findOne({
@@ -44,5 +48,44 @@ export class NewsItemService {
       throw new NotFoundException();
     }
     return await this.analyseRepository.remove(NewsItem);
+  }
+
+  async findWithFilters(filters: {
+    sourceId?: number;
+    date?: string;
+    categorie?: string;
+  }) {
+    const queryBuilder = this.analyseRepository
+      .createQueryBuilder('news')
+      .leftJoinAndSelect('news.source', 'source'); // Jointure avec la table sources
+
+    // Filtrage par ID de la source
+    if (filters.sourceId) {
+      queryBuilder.andWhere('source.id = :sourceId', {
+        sourceId: filters.sourceId,
+      });
+    }
+
+    // Filtrage par catégorie (énumération)
+    if (filters.categorie) {
+      queryBuilder.andWhere('news.categorie = :categorie', {
+        categorie: filters.categorie,
+      });
+    }
+
+    // Filtrage par date
+    if (filters.date) {
+      const start = new Date(filters.date);
+      start.setHours(0, 0, 0, 0);
+      const end = new Date(filters.date);
+      end.setHours(23, 59, 59, 999);
+
+      queryBuilder.andWhere('news.datePublication BETWEEN :start AND :end', {
+        start,
+        end,
+      });
+    }
+
+    return await queryBuilder.orderBy('news.datePublication', 'DESC').getMany();
   }
 }

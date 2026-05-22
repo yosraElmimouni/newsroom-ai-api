@@ -1,4 +1,5 @@
 export enum ArticleStatus {
-  Publier = 'Publier',
   Brouillon = 'Brouillon',
+  EnCours = 'EnCours',
+  Publier = 'Publier',
 }

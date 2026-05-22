@@ -4,6 +4,7 @@ import { UpdateArticleDto } from '../dto/update-article.dto';
 import { Repository } from 'typeorm';
 import { Article } from '../entities/articles.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ArticleStatus } from 'src/enums/ArticleStatus';
 
 @Injectable()
 export class ArticleService {
@@ -53,4 +54,19 @@ export class ArticleService {
 
     return await this.articleRepository.save(article);
   }
+
+  async getByStatus(status: ArticleStatus) {
+    return await this.articleRepository.findBy({
+      statut: status,
+    });
+  }
+
+  async countByStatus(statut: ArticleStatus): Promise<number> {
+  return await this.articleRepository.count({
+    where: {
+      statut,
+    },
+  });
+}
+
 }

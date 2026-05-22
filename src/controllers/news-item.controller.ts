@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { NewsItemService } from '../services/news-item.service';
 import { CreateNewsItemDto } from '../dto/create-news-item.dto';
 import { UpdateNewsItemDto } from '../dto/update-news-item.dto';
@@ -13,8 +13,22 @@ export class NewsItemController {
   }
 
   @Get()
-  findAll() {
-    return this.newsItemService.findAll();
+  async findAll(
+   @Query('sourceId') sourceId?: number,
+  @Query('date') date?: string,
+  @Query('categorie') categorie?: string,
+  ) {
+    // Si aucun paramètre n'est passé, on retourne tout
+    if (!sourceId && !date && !categorie) {
+      return this.newsItemService.findAll();
+    }
+
+    // Sinon, on appelle une méthode de recherche filtrée
+    return this.newsItemService.findWithFilters({
+    sourceId: sourceId ? +sourceId : undefined, // Conversion en nombre
+    date,
+    categorie,
+  });
   }
 
   @Get(':id')
