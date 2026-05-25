@@ -9,6 +9,7 @@ import { Revision } from 'src/entities/revision.entity';
 import { Role } from 'src/entities/role.entity';
 import { User } from 'src/entities/user.entity';
 import { Notification } from 'src/entities/notification.entity';
+import { AuthModule } from './auth.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -20,6 +21,7 @@ import { Notification } from 'src/entities/notification.entity';
       Media,
       IAAnalyse,
     ]),
+    AuthModule
   ],
   controllers: [UserController],
   providers: [UserService],

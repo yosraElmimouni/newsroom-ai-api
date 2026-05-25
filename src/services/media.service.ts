@@ -1,10 +1,14 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Body, Injectable, NotFoundException, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { CreateMediaDto } from '../dto/create-media.dto';
 import { UpdateMediaDto } from '../dto/update-media.dto';
 import { Media } from 'src/entities/media.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-
+import { FileInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
+import { MediaType } from 'src/enums/MediaType';
+import * as streamifier from 'streamifier';
+import { v2 as cloudinary } from 'cloudinary';
 @Injectable()
 export class MediaService {
   constructor(
@@ -54,4 +58,8 @@ export class MediaService {
       },
     });
   }
+
+    
+ 
+ 
 }

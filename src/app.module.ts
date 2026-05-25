@@ -16,21 +16,23 @@ import { RoleModule } from './modules/role.module';
 import { SourceModule } from './modules/source.module';
 import { BackupModule } from './modules/backup.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { AuthModule } from './modules/auth.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({ isGlobal: true }),  // ← déplacer ici
+  AuthModule,  
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
         const url = configService.get('DATABASE_URL');
-        
+
         const config: any = {
           name: 'default',
           type: 'postgres',
           entities: [join(__dirname, '**', '*.entity.{ts,js}')],
-          synchronize: true, 
+          synchronize: true,
         };
 
         if (url) {
@@ -58,30 +60,33 @@ import { ScheduleModule } from '@nestjs/schedule';
         const config: any = {
           type: 'postgres',
           entities: [join(__dirname, '**', '*.entity.{ts,js}')],
-          synchronize: true, 
+          synchronize: true,
         };
 
         if (backupUrl) {
           config.url = backupUrl;
-          if (backupUrl.includes('neon.tech') || backupUrl.includes('render.com')) {
+          if (
+            backupUrl.includes('neon.tech') ||
+            backupUrl.includes('render.com')
+          ) {
             config.ssl = { rejectUnauthorized: false };
           }
         } else {
-          config.host = configService.get('DB_HOST') || 'localhost'; 
+          config.host = configService.get('DB_HOST') || 'localhost';
           config.port = parseInt(configService.get('DB_PORT') || '5432');
           config.username = configService.get('DB_USERNAME');
           config.password = configService.get('DB_PASSWORD');
-          config.database = configService.get('DB_NAME') + '_backup'; 
+          config.database = configService.get('DB_NAME') + '_backup';
         }
         return config;
       },
     }),
+    UserModule,
     ScheduleModule.forRoot(),
-    BackupModule, 
+    BackupModule,
     ArticleModule,
     MediaModule,
     AgendaModule,
-    UserModule,
     NewsItemModule,
     IaAnalyseModule,
     NotificationModule,

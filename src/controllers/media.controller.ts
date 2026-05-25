@@ -1,4 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller, Get, Post, Body, Patch, Param,
+  Delete, UploadedFile, UseInterceptors
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 import { MediaService } from './../services/media.service';
 import { CreateMediaDto } from './../dto/create-media.dto';
 import { UpdateMediaDto } from './../dto/update-media.dto';
@@ -37,4 +43,5 @@ export class MediaController {
     return this.mediaService.getMediasByArticle(+id);
   }
 
+  
 }
