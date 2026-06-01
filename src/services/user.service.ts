@@ -6,7 +6,7 @@ import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 import { Role } from 'src/entities/role.entity';
 import { Roles } from 'src/enums/Roles';
-
+import * as bcrypt from 'bcrypt';
 @Injectable()
 export class UserService {
   constructor(
@@ -90,13 +90,15 @@ findOne(id: number) {
   });
   if (!user) throw new NotFoundException();
 
-  // Champs simples
-  if (updateUserDto.nom)     user.nom     = updateUserDto.nom;
-  if (updateUserDto.prenom)  user.prenom  = updateUserDto.prenom;
-  if (updateUserDto.email)   user.email   = updateUserDto.email.toLowerCase();
-  if (updateUserDto.motDePasse) user.motDePasse = updateUserDto.motDePasse;
+  if (updateUserDto.nom)    user.nom    = updateUserDto.nom;
+  if (updateUserDto.prenom) user.prenom = updateUserDto.prenom;
+  if (updateUserDto.email)  user.email  = updateUserDto.email.toLowerCase();
 
-  // Rôle : résoudre l'entité Role depuis le string
+  // ✅ Hash le mot de passe si fourni
+  if (updateUserDto.motDePasse) {
+    user.motDePasse = await bcrypt.hash(updateUserDto.motDePasse, 10);
+  }
+
   if (updateUserDto.role) {
     const roleRepo = this.UserRepository.manager.getRepository(Role);
     const role = await roleRepo.findOne({
