@@ -101,4 +101,13 @@ export class ArticleService {
       },
     });
   }
+
+  async getByStatusAndAuthor(statut: ArticleStatus, auteurId: number) {
+    return await this.articleRepository.find({
+      where: {
+        statut,
+        auteur: { id: auteurId },
+      },
+    });
+  }
 }

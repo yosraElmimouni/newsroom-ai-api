@@ -52,4 +52,12 @@ countByStatus(@Param('statut') statut: ArticleStatus) {
   ) {
     return this.articleService.countByStatusAndAuthor(statut, auteurId);
   }
+
+  @Get('status/:statut/author/:auteurId')
+  getByStatusAndAuthor(
+    @Param('statut') statut: ArticleStatus,
+    @Param('auteurId') auteurId: number,
+  ) {
+    return this.articleService.getByStatusAndAuthor(statut, auteurId);
+  }
 }
