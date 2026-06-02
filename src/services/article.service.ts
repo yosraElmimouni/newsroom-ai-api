@@ -17,26 +17,29 @@ export class ArticleService {
   ) {}
 
   async create(createArticleDto: CreateArticleDto) {
-  const { auteurId, ...rest } = createArticleDto;
+    const { auteurId, ...rest } = createArticleDto;
 
-  const auteur = await this.userRepository.findOne({ where: { id: auteurId } });
-  if (!auteur) throw new NotFoundException(`Utilisateur ${auteurId} introuvable`);
+    const auteur = await this.userRepository.findOne({
+      where: { id: auteurId },
+    });
+    if (!auteur)
+      throw new NotFoundException(`Utilisateur ${auteurId} introuvable`);
 
-  const article = this.articleRepository.create({
-    titre:    rest.titre,
-    contenu:  rest.contenu,
-    statut:   rest.statut,
-    categorie: rest.categorie,
-    tags:     rest.tags,
-    auteur,
-  });
+    const article = this.articleRepository.create({
+      titre: rest.titre,
+      contenu: rest.contenu,
+      statut: rest.statut,
+      categorie: rest.categorie,
+      tags: rest.tags,
+      auteur,
+    });
 
-  return await this.articleRepository.save(article);
-}
+    return await this.articleRepository.save(article);
+  }
 
   async findAll() {
     return await this.articleRepository.find({
-      relations: ['auteur', 'auteur.role'],  
+      relations: ['auteur', 'auteur.role'],
     });
   }
 
@@ -80,11 +83,22 @@ export class ArticleService {
   }
 
   async countByStatus(statut: ArticleStatus): Promise<number> {
-  return await this.articleRepository.count({
-    where: {
-      statut,
-    },
-  });
-}
+    return await this.articleRepository.count({
+      where: {
+        statut,
+      },
+    });
+  }
 
+  async countByStatusAndAuthor(
+    statut: ArticleStatus,
+    auteurId: number,
+  ): Promise<number> {
+    return await this.articleRepository.count({
+      where: {
+        statut,
+        auteur: { id: auteurId },
+      },
+    });
+  }
 }
