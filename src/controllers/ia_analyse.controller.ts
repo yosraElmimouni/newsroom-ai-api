@@ -17,6 +17,18 @@ export class IaAnalyseController {
     return this.iaAnalyseService.findAll();
   }
 
+  // Historique de conversation d'un utilisateur (chargé au démarrage de l'assistant IA)
+  @Get('history/:userId')
+  findHistory(@Param('userId') userId: string) {
+    return this.iaAnalyseService.findByUser(+userId);
+  }
+
+  // Efface l'historique d'un utilisateur (nouvelle conversation)
+  @Delete('history/:userId')
+  clearHistory(@Param('userId') userId: string) {
+    return this.iaAnalyseService.removeByUser(+userId);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.iaAnalyseService.findOne(+id);
